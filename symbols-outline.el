@@ -109,6 +109,11 @@ Check out `symbols-outline--format-symbol-name' for more details."
   :type 'boolean
   :group 'symbols-outline)
 
+(defcustom symbols-outline-follow-symbol-in-origin t
+  "Whether Locate the symbol at point in the original buffer."
+  :type 'boolean
+  :group 'symbols-outline)
+
 (defvar symbols-outline-buffer-name "*Outline*"
   "Buffer name for symbols outline side window.")
 
@@ -255,7 +260,8 @@ Argument N means number of symbols to move."
   (symbols-outline--before-move)
   (forward-line (or n 1))
   (beginning-of-line)
-  (symbols-outline--display-symbol-in-origin)
+  (when symbols-outline-follow-symbol-in-origin
+    (symbols-outline--display-symbol-in-origin))
   (symbols-outline--after-move))
 
 (defun symbols-outline-prev (n)
@@ -282,7 +288,8 @@ Argument N means number of symbols to move."
         (progn
           (message "No more symbols.")
           (goto-char orig-pos))
-      (symbols-outline--display-symbol-in-origin)))
+      (when symbols-outline-follow-symbol-in-origin
+        (symbols-outline--display-symbol-in-origin))))
   (symbols-outline--after-move))
 
 (defun symbols-outline-prev-same-level ()
@@ -303,7 +310,8 @@ Argument N means number of symbols to move."
         (progn
           (message "No more symbols.")
           (goto-char orig-pos))
-      (symbols-outline--display-symbol-in-origin)))
+      (when symbols-outline-follow-symbol-in-origin
+        (symbols-outline--display-symbol-in-origin))))
   (symbols-outline--after-move))
 
 (defun symbols-outline-move-depth-up ()
@@ -319,7 +327,8 @@ Argument N means number of symbols to move."
                          (get-text-property (line-beginning-position) 'depth))
                finally
                (beginning-of-line)
-               (symbols-outline--display-symbol-in-origin))
+               (when symbols-outline-follow-symbol-in-origin
+                 (symbols-outline--display-symbol-in-origin)))
     (message "No parent symbols."))
   (symbols-outline--after-move))
 
@@ -342,7 +351,8 @@ Argument N means number of symbols to move."
         (progn
           (message "No children symbols.")
           (goto-char orig-pos))
-      (symbols-outline--display-symbol-in-origin)))
+      (when symbols-outline-follow-symbol-in-origin
+        (symbols-outline--display-symbol-in-origin))))
   (symbols-outline--after-move))
 
 (defun symbols-outline-move-to-first ()
