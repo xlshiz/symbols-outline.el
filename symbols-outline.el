@@ -750,6 +750,15 @@ its children.")
         (set-window-parameter win 'no-delete-other-windows symbols-outline-no-delete-other-window))
       (setq symbols-outline--window-widened nil))))
 
+;;;###autoload
+(defun symbols-outline-smart-toggle ()
+  "Enable or disable `symbols-outline-mode' according to buffer's visibility.
+  If the symbols-ouline buffer is displayed in any window, close it."
+  (interactive)
+  (if (get-buffer-window symbols-outline-buffer-name t)
+      (quit-windows-on symbols-outline-buffer-name)
+    (symbols-outline-show)))
+
 (provide 'symbols-outline)
 
 ;;; symbols-outline.el ends here
