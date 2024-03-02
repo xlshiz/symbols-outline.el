@@ -618,6 +618,7 @@ its children.")
   (interactive)
   ;; Only refresh when the origin buffer has file name or in the outline buffer
   (when (and (get-buffer symbols-outline-buffer-name)
+             (buffer-name symbols-outline--origin)
              (or (buffer-file-name symbols-outline--origin)
                  (equal buffer-file-name symbols-outline-buffer-name)))
     (with-current-buffer symbols-outline-buffer-name
