@@ -31,7 +31,7 @@ This package is in Melpa so you can install it with your favorite package manage
   :ensure t
   :bind ("C-c i" . symbols-outline-show)
   :init
-  (add-hook 'lsp-mode-hook ; Or `eglot-mode-hook' 
+  (add-hook 'lsp-mode-hook ; Or `eglot-managed-mode-hook' 
             (lambda ()
               (setq-local symbols-outline-fetch-fn #'symbols-outline-lsp-fetch)))
   :config
