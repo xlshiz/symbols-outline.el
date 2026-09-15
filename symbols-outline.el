@@ -156,8 +156,8 @@ It's a cons cell whose car/cdr is the expanded/collapsed indicator margin spec."
 
 (defun symbols-outline--get-margin-spec-cache (collapsed)
   "Get the cached margin spec for whether the symbol node is COLLAPSED."
-  (if-let (spec (funcall
-                 (if collapsed #'cdr #'car) symbols-outline--margin-spec-cache))
+  (if-let* ((spec (funcall
+                   (if collapsed #'cdr #'car) symbols-outline--margin-spec-cache)))
       spec
     (funcall (if collapsed #'setcdr #'setcar)
              symbols-outline--margin-spec-cache
@@ -224,7 +224,7 @@ It's a cons cell whose car/cdr is the expanded/collapsed indicator margin spec."
 
 (defun symbols-outline--get-kind-face (kind)
   "Get face for node of KIND."
-  (when-let (faces (cdr (assoc kind symbols-outline--kind-face-alist)))
+  (when-let* ((faces (cdr (assoc kind symbols-outline--kind-face-alist))))
     (seq-find #'facep faces)))
 
 (defun symbols-outline--get-symbol-face-from-origin-buf (name line)
@@ -238,7 +238,7 @@ It's a cons cell whose car/cdr is the expanded/collapsed indicator margin spec."
 
 (defun symbols-outline--display-symbol-in-origin ()
   "Locate the symbol at point in the original buffer."
-  (when-let (line (get-text-property (line-beginning-position) 'line))
+  (when-let* ((line (get-text-property (line-beginning-position) 'line)))
     (with-selected-window symbols-outline--origin-window
       (goto-char (point-min))
       (forward-line (1- line))
@@ -564,7 +564,7 @@ Currently special formatting is applied only when there are `::', e.g.,
 
     ;; Add chevrons indicating whether the node is collapsed
     (when (symbols-outline-node-children node)
-      (if-let (ov (symbols-outline-node-ov node))
+      (if-let* ((ov (symbols-outline-node-ov node)))
           (unless (eq (overlay-start ov) (point))
             (move-overlay ov (point) (point)))
         (setq ov (make-overlay (point) (point)))
@@ -675,8 +675,8 @@ Check out `symbols-outline--kind-face-alist' for available node kinds."
   (with-current-buffer symbols-outline-buffer-name
     (let* ((tree (with-current-buffer symbols-outline--origin
                    symbols-outline--entries-tree))
-           (nrows-to-top (when-let (win (get-buffer-window
-                                         symbols-outline-buffer-name))
+           (nrows-to-top (when-let* ((win (get-buffer-window
+                                           symbols-outline-buffer-name)))
                            (with-selected-window win
                              (cdr (nth 6 (posn-at-point))))))
            (symbols-outline--refreshing nil)
@@ -690,8 +690,8 @@ Check out `symbols-outline--kind-face-alist' for available node kinds."
         (goto-char (point-min))
         (symbols-outline--after-move)
         (symbols-outline--follow-symbol)
-        (when-let (((eq symbols-outline--previous-origin symbols-outline--origin))
-                   (win (get-buffer-window symbols-outline-buffer-name)))
+        (when-let* (((eq symbols-outline--previous-origin symbols-outline--origin))
+                    (win (get-buffer-window symbols-outline-buffer-name)))
           (with-selected-window win
             (recenter nrows-to-top)))))))
 
@@ -750,7 +750,7 @@ its children.")
     (with-current-buffer buf
       (unless (eq major-mode 'symbols-outline-mode)
         (symbols-outline-mode)))
-    (if-let ((window (get-buffer-window buf)))
+    (if-let* ((window (get-buffer-window buf)))
         (select-window window)
       (symbols-outline-refresh)
       (let ((win (display-buffer-in-side-window

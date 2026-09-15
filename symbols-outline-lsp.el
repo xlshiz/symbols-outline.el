@@ -80,7 +80,7 @@
                        :name (symbols-outline-lsp--get-item "name" symbol)
                        :kind (symbols-outline-lsp--kind-name
                               (symbols-outline-lsp--get-item "kind" symbol))
-                       :line (if-let ((location (symbols-outline-lsp--get-item "location" symbol)))
+                       :line (if-let* ((location (symbols-outline-lsp--get-item "location" symbol)))
                                  (thread-last location
                                               (symbols-outline-lsp--get-item "range")
                                               (symbols-outline-lsp--get-item "start")
@@ -118,8 +118,8 @@
 
 (defun symbols-outline-lsp--fetch-eglot (refresh-fn)
   "Retrieve symbols with eglot."
-  (if-let ((server (eglot-current-server))
-           ((eglot--server-capable :documentSymbolProvider)))
+  (if-let* ((server (eglot-current-server))
+            ((eglot--server-capable :documentSymbolProvider)))
       (jsonrpc-async-request server :textDocument/documentSymbol
                              `(:textDocument ,(eglot--TextDocumentIdentifier))
                              :success-fn

@@ -42,10 +42,10 @@ Active while follow mode is enabled and nil/cancelled otherwise.")
 
 (defun symbols-outline--follow (&optional _)
   "Follow the cursor in original buffer."
-  (when-let (buffer-file-name
-             ((not (eq last-command 'self-insert-command)))
-             (win (get-buffer-window symbols-outline-buffer-name))
-             (selected-buf (window-buffer (selected-window))))
+  (when-let* (buffer-file-name
+              ((not (eq last-command 'self-insert-command)))
+              (win (get-buffer-window symbols-outline-buffer-name))
+              (selected-buf (window-buffer (selected-window))))
     (setq symbols-outline--previous-origin symbols-outline--origin)
     (if (eq symbols-outline--origin selected-buf)
         ;; Same buffer -> just follow symbol under point

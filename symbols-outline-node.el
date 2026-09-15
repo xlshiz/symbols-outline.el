@@ -44,7 +44,7 @@
 
 (defun symbols-outline-node-size (node)
   "Return the total number of nodes of tree NODE."
-  (if-let (children (symbols-outline-node-children node))
+  (if-let* ((children (symbols-outline-node-children node)))
       (thread-last children
                    (mapcar #'symbols-outline-node-size)
                    (apply #'+)
@@ -53,7 +53,7 @@
 
 (defun symbols-outline-node-size-parents (node)
   "Return the total number of nodes of tree NODE that have children."
-  (if-let (children (symbols-outline-node-children node))
+  (if-let* ((children (symbols-outline-node-children node)))
       (thread-last children
                    (mapcar #'symbols-outline-node-size-parents)
                    (apply #'+)
@@ -62,8 +62,8 @@
 
 (defun symbols-outline-node-depth-non-collpased (node)
   "Return the depth of NODE ignoring collapsed children."
-  (if-let ((children (symbols-outline-node-children node))
-           ((not (symbols-outline-node-collapsed node))))
+  (if-let* ((children (symbols-outline-node-children node))
+            ((not (symbols-outline-node-collapsed node))))
       (thread-last children
                    (mapcar #'symbols-outline-node-depth-non-collpased)
                    (seq-max)
@@ -75,7 +75,7 @@
 
 FN is a function that takes one argument: node."
   (funcall fn node)
-  (when-let (children (symbols-outline-node-children node))
+  (when-let* ((children (symbols-outline-node-children node)))
     (dolist (c children)
       (symbols-outline-node-foreach c fn))))
 
@@ -84,8 +84,8 @@ FN is a function that takes one argument: node."
 
 FN is a function that takes one argument: node."
   (funcall fn node)
-  (when-let ((children (symbols-outline-node-children node))
-             ((not (symbols-outline-node-collapsed node))))
+  (when-let* ((children (symbols-outline-node-children node))
+              ((not (symbols-outline-node-collapsed node))))
     (dolist (c children)
       (symbols-outline-node-foreach-non-collapsed c fn))))
 
@@ -98,8 +98,8 @@ The fourth argument DEPTH0 is for internal recursive use only."
   (let ((depth1 (or depth0 0)))
     (when (= depth1 depth)
       (funcall fn node))
-    (when-let (((< depth1 depth))
-               (children (symbols-outline-node-children node)))
+    (when-let* (((< depth1 depth))
+                (children (symbols-outline-node-children node)))
       (dolist (c children)
         (symbols-outline-node-foreach-at-depth c depth fn (1+ depth1))))))
 
@@ -110,7 +110,7 @@ If none were found, return nil.
 PRED is a function that takes one argument: node."
   (if (funcall pred node)
       node
-    (when-let (children (symbols-outline-node-children node))
+    (when-let* ((children (symbols-outline-node-children node)))
       (cl-loop for c in children
                for res = (symbols-outline-node-find c pred)
                if res return res))))
@@ -145,18 +145,18 @@ its children to its parent, and delete this node."
           children)
     (setf (symbols-outline-node-children parent)
           (append (delq node parent-children) children)))
-  (when-let (children (symbols-outline-node-children node))
+  (when-let* ((children (symbols-outline-node-children node)))
     (mapc #'symbols-outline-node--prune-pseudo-nodes children)))
 
 (defun symbols-outline-node--sort-children (node)
   "Sort NODE's children based on their line numbers."
   (setf (symbols-outline-node-children node)
         (sort (nreverse (symbols-outline-node-children node))
-              (lambda (a b) (if-let ((line-a (symbols-outline-node-line a))
-                                     (line-b (symbols-outline-node-line b)))
+              (lambda (a b) (if-let* ((line-a (symbols-outline-node-line a))
+                                      (line-b (symbols-outline-node-line b)))
                                 (< line-a line-b)
                               t))))
-  (when-let (children (symbols-outline-node-children node))
+  (when-let* ((children (symbols-outline-node-children node)))
     (mapc #'symbols-outline-node--sort-children children)))
 
 (defun symbols-outline-node--copy-collapse-state (from to)
@@ -170,8 +170,8 @@ its children to its parent, and delete this node."
        (let ((name (symbols-outline-node-name node))
              (kind (symbols-outline-node-kind node))
              (signature (symbols-outline-node-signature node)))
-         (when-let (((symbols-outline-node-children node))
-                    (collapsed (symbols-outline-node-collapsed node)))
+         (when-let* (((symbols-outline-node-children node))
+                     (collapsed (symbols-outline-node-collapsed node)))
            (puthash (concat name kind signature) collapsed collapsed-table)))))
     (symbols-outline-node-foreach
      to
