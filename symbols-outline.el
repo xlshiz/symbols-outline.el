@@ -244,14 +244,28 @@ It's a cons cell whose car/cdr is the expanded/collapsed indicator margin spec."
       (forward-line (1- line))
       (recenter 4))))
 
+(defun symbols-outline--set-indicator (char)
+  "Replace the first character of the current line's `line-prefix' with CHAR.
+
+The `line-prefix' string can't be updated in place with `aset', since Emacs
+rejects a character whose storage size differs from the one it replaces; the
+property is set to a freshly built string instead."
+  (let ((beg (line-beginning-position))
+        ;; Only a text property is changed, not the text itself.
+        (inhibit-read-only t))
+    (when-let* ((lp (get-text-property beg 'line-prefix))
+                ((not (eq (aref lp 0) char))))
+      (put-text-property beg (1+ beg) 'line-prefix
+                         (concat (char-to-string char) (substring lp 1))))))
+
 (defun symbols-outline--before-move ()
   "Delete the indicator for current symbol before movement."
-  (aset (get-text-property (line-beginning-position) 'line-prefix) 0 ?\s))
+  (symbols-outline--set-indicator ?\s))
 
 (defun symbols-outline--after-move ()
   "Set the indicator for current symbol after movement."
-  (aset (get-text-property (line-beginning-position) 'line-prefix) 0
-        (aref symbols-outline-current-symbol-indicator 0)))
+  (symbols-outline--set-indicator
+   (aref symbols-outline-current-symbol-indicator 0)))
 
 (defun symbols-outline-next (n)
   "Move to the next symbol.
