@@ -737,7 +737,10 @@ its children.")
       (setq-local default-directory
                   (buffer-local-value 'default-directory symbols-outline--origin)))
     (setq symbols-outline--refreshing t)
-    (funcall symbols-outline-fetch-fn #'symbols-outline--refresh-tree)))
+    ;; The backend is chosen in the origin buffer, which may be different from
+    ;; the buffer this runs in, e.g. when refreshing from the outline buffer.
+    (funcall (buffer-local-value 'symbols-outline-fetch-fn symbols-outline--origin)
+             #'symbols-outline--refresh-tree)))
 
 ;;;###autoload
 (defun symbols-outline-show ()
