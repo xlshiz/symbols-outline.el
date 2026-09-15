@@ -8,7 +8,7 @@ This package displays all the symbols (including classes, functions, variables, 
 1. List the symbols in a well-organized window.
 2. The outline window position follows your cursor in the original buffer.
 3. It's easy to navigate between symbols via moving in the outline window.
-4. Allows various and custom backends. Currently ctags and lsp-mode/eglot backends are provided.
+4. Allows various and custom backends. Currently ctags, imenu and lsp-mode/eglot backends are provided.
 
 # Demo
 
@@ -16,9 +16,9 @@ This package displays all the symbols (including classes, functions, variables, 
 
 # Requirements
 
-Symbols-outline.el relies on a backend to get the symbols. By default the ctags backend is used. Or if `lsp-mode` or `eglot` is active, you can use the lsp backend. See `symbols-outline-fetch-fn`.
+Symbols-outline.el relies on a backend to get the symbols. By default the ctags backend is used. Or if `lsp-mode` or `eglot` is active, you can use the lsp backend. The imenu backend needs no external program and works for every mode that provides imenu support. See `symbols-outline-fetch-fn`.
 
-If using ctags backend, `universal-ctags` must be installed on your machine.
+If using ctags backend, `universal-ctags` must be installed on your machine. For Emacs Lisp, the imenu backend covers more definitions than ctags does: ctags' Emacs Lisp parser doesn't recognize the `cl-defun` family.
 
 # Installation
 
@@ -34,6 +34,9 @@ This package is in Melpa so you can install it with your favorite package manage
   (add-hook 'lsp-mode-hook ; Or `eglot-managed-mode-hook' 
             (lambda ()
               (setq-local symbols-outline-fetch-fn #'symbols-outline-lsp-fetch)))
+  (add-hook 'emacs-lisp-mode-hook ; imenu covers `cl-defun' and friends
+            (lambda ()
+              (setq-local symbols-outline-fetch-fn #'symbols-outline-imenu-fetch)))
   :config
   (setq symbols-outline-window-position 'left)
   (symbols-outline-follow-mode))
